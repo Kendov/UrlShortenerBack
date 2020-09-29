@@ -25,7 +25,7 @@ namespace urlShortener.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(UrlData entry)
+        public ActionResult Post(UrlDataEntryModel entry)
         {
 
             return Ok(_service.Post(entry));

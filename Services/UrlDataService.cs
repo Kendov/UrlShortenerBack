@@ -2,20 +2,21 @@ using System.Collections.Generic;
 using MongoDB.Driver;
 using urlShortener.Data;
 using urlShortener.Models;
-using shortid;
-using shortid.Configuration;
-using System;
+
 using System.Net.Http;
+using AutoMapper;
+using System;
 
 namespace urlShortener.Services
 {
     public class UrlDataService : IUrlDataService
     {
         private readonly MongoDbContext _context;
-        public UrlDataService(MongoDbContext urlDataCollection)
+        private readonly IMapper _mapper;
+        public UrlDataService(MongoDbContext urlDataCollection, IMapper mapper)
         {
             _context = urlDataCollection;
-            
+            _mapper = mapper;
         }
         public UrlData Get(string Id)
         {
@@ -40,8 +41,13 @@ namespace urlShortener.Services
             
         }
 
-        public UrlData Post(UrlData entry)
+        public UrlData Post(UrlDataEntryModel entryValue)
         {
+            if(!Uri.IsWellFormedUriString(entryValue.Url, UriKind.Absolute))
+                throw new HttpRequestException("Bad url");
+            
+            UrlData entry = _mapper.Map<UrlData>(entryValue);
+
             // if no id -> generate a random one
             // if id -> check if exist before insert
             if(string.IsNullOrEmpty(entry.Id))

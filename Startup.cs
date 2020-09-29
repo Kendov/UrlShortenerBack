@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -40,6 +41,13 @@ namespace urlShortener
             services.AddSingleton<MongoDbContext>();
             services.AddScoped<IUrlDataService, UrlDataService>();
 
+            // Auto Mapper Configurations
+            var mapconfig = new MapperConfiguration( x =>
+            {
+                x.AddProfile(new AutoMapperConfig());
+            });
+            IMapper mapper = mapconfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             //Enable Cross-Origin Requests
             services.AddCors(option => option.AddPolicy("MyPolicy", builder =>

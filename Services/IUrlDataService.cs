@@ -8,7 +8,7 @@ namespace urlShortener.Services
         List<UrlData> List();
         UrlData Get(string Id);
         string GetUrl(string Id);
-        UrlData Post(UrlData entry);
+        UrlData Post(UrlDataEntryModel entry);
         
     }
 }
