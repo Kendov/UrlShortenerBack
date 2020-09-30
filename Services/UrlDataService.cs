@@ -6,6 +6,7 @@ using urlShortener.Models;
 using System.Net.Http;
 using AutoMapper;
 using System;
+using urlShortener.Services.DomainNotification;
 
 namespace urlShortener.Services
 {
@@ -13,10 +14,16 @@ namespace urlShortener.Services
     {
         private readonly MongoDbContext _context;
         private readonly IMapper _mapper;
-        public UrlDataService(MongoDbContext urlDataCollection, IMapper mapper)
+        private readonly INotificationContext _notification;
+        public UrlDataService(
+            MongoDbContext urlDataCollection,
+            IMapper mapper,
+            INotificationContext notification
+        )
         {
             _context = urlDataCollection;
             _mapper = mapper;
+            _notification = notification;
         }
         public UrlData Get(string Id)
         {
@@ -38,26 +45,31 @@ namespace urlShortener.Services
             return _context.UrlData
                 .Find(x => true)
                 .ToList();
-            
+
         }
 
         public UrlData Post(UrlDataEntryModel entryValue)
         {
-            if(!Uri.IsWellFormedUriString(entryValue.Url, UriKind.Absolute))
-                throw new HttpRequestException("Bad url");
-            
+            if (!Uri.IsWellFormedUriString(entryValue.Url, UriKind.Absolute))
+            {
+                //throw new HttpRequestException("Bad url");
+                
+                _notification.AddNotification("Bad url - The url is not valid");
+                return null;
+            }
+
             UrlData entry = _mapper.Map<UrlData>(entryValue);
 
             // if no id -> generate a random one
             // if id -> check if exist before insert
-            if(string.IsNullOrEmpty(entry.Id))
+            if (string.IsNullOrEmpty(entry.Id))
             {
                 entry.Id = IdGenerator.GenerateId();
                 _context.UrlData.InsertOne(entry);
                 return entry;
             }
-            
-            if(_context.UrlData.Find(x => x.Id == entry.Id).Any())
+
+            if (_context.UrlData.Find(x => x.Id == entry.Id).Any())
             {
                 throw new HttpRequestException("Id already exist");
             }

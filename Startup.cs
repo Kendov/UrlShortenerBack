@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using urlShortener.Data;
 using urlShortener.Extensions;
 using urlShortener.Services;
+using urlShortener.Services.DomainNotification;
 
 namespace urlShortener
 {
@@ -30,7 +31,10 @@ namespace urlShortener
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            
+            
+            services.AddScoped<INotificationContext, NotificationContext>();
+
 
             services.Configure<DbConfiguration>(
             Configuration.GetSection("ConnectionStrings"));
@@ -56,6 +60,11 @@ namespace urlShortener
                     .AllowAnyMethod()
                     .AllowAnyHeader();
             }));
+
+            services.AddControllers(options => 
+            {
+                options.Filters.Add<NotificationFilter>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,7 +76,7 @@ namespace urlShortener
             }
 
             //app.ConfigureExceptionHandler();
-            app.ConfigureCustomExceptionMiddleware();
+            //app.ConfigureCustomExceptionMiddleware();
 
             app.UseCors("MyPolicy");
 
