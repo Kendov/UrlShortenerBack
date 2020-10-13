@@ -31,8 +31,8 @@ namespace urlShortener
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            
+
+
             services.AddScoped<INotificationContext, NotificationContext>();
 
 
@@ -47,9 +47,9 @@ namespace urlShortener
 
             // Auto Mapper Configurations
             var mapconfig = new MapperConfiguration( x =>
-            {
-                x.AddProfile(new AutoMapperConfig());
-            });
+           {
+               x.AddProfile(new AutoMapperConfig());
+           });
             IMapper mapper = mapconfig.CreateMapper();
             services.AddSingleton(mapper);
 
@@ -61,7 +61,7 @@ namespace urlShortener
                     .AllowAnyHeader();
             }));
 
-            services.AddControllers(options => 
+            services.AddControllers(options =>
             {
                 options.Filters.Add<NotificationFilter>();
             });
@@ -78,11 +78,12 @@ namespace urlShortener
             //app.ConfigureExceptionHandler();
             //app.ConfigureCustomExceptionMiddleware();
 
-            app.UseCors("MyPolicy");
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("MyPolicy");
 
             app.UseAuthorization();
 

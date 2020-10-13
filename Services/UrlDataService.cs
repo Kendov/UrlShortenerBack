@@ -71,7 +71,8 @@ namespace urlShortener.Services
 
             if (_context.UrlData.Find(x => x.Id == entry.Id).Any())
             {
-                throw new HttpRequestException("Id already exist");
+                _notification.AddNotification("Id already exist");
+                return null;
             }
             _context.UrlData.InsertOne(entry);
             return entry;
