@@ -19,8 +19,8 @@ namespace urlShortener.Data
             // uses TTL mongoDB for expiration time
             // define expiration time based on expiration field on urlData
             // https://docs.mongodb.com/manual/tutorial/expire-data/            
-            var indexKeysDefinition = Builders<UrlData>.IndexKeys.Ascending(x => x.CreatedAt);
-            var indexOptions = new CreateIndexOptions(){ExpireAfter = TimeSpan.Zero};
+            var indexKeysDefinition = Builders<UrlData>.IndexKeys.Ascending(x => x.ExpireAt);
+            var indexOptions = new CreateIndexOptions(){ExpireAfter = TimeSpan.FromSeconds(1)};
             var indexModel = new CreateIndexModel<UrlData>(indexKeysDefinition, indexOptions);
             UrlData.Indexes.CreateOne(indexModel);
 
